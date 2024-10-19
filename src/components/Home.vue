@@ -6,10 +6,10 @@
     <div class="logo">
       Luxirty Search
     </div>
-    <div class="search-container">
+    <div class="search-container" ref="searchContainerRef">
       <div class="gcse-searchbox-only" data-resultsUrl="search"></div>
     </div>
-    
+
     <!-- 添加页脚 -->
     <footer>
       <p>
@@ -22,15 +22,35 @@
   </div>
 </template>
 
-<script>
-export default {
-  mounted() {
-    const script = document.createElement('script');
-    script.src = `https://cse.google.com/cse.js?cx=${import.meta.env.VITE_GOOGLE_CSE_CX}`;
-    script.async = true;
-    document.body.appendChild(script);
+<script setup lang="ts">
+import { onMounted, onUnmounted, useTemplateRef } from 'vue';
+
+const searchContainerRef = useTemplateRef('searchContainerRef');
+
+const observer = new MutationObserver(() => {
+  const input: HTMLInputElement | null = document.querySelector('input.gsc-input');
+  if (input != null) {
+    input.focus();
+    observer.disconnect();
   }
-};
+});
+
+onMounted(() => {
+  const script = document.createElement('script');
+  script.src = `https://cse.google.com/cse.js?cx=${import.meta.env.VITE_GOOGLE_CSE_CX}`;
+  script.async = true;
+  document.body.appendChild(script);
+
+  if (searchContainerRef.value === null) {
+    console.warn("Failed to find the search container, can't observe it to focus the input.");
+  } else {
+    observer.observe(searchContainerRef.value, { childList: true, subtree: true });
+  }
+});
+
+onUnmounted(() => {
+  observer.disconnect();
+});
 </script>
 
 <style scoped>
@@ -44,14 +64,16 @@ export default {
 
 .logo {
   position: absolute;
-  top: 35vh; /* 从 30vh 增加到 35vh */
+  top: 35vh;
+  /* 从 30vh 增加到 35vh */
   font-size: 48px;
   font-weight: bold;
 }
 
 .search-container {
   position: absolute;
-  top: calc(35vh + 100px); /* 相应地调整，保持与 logo 的相对位置 */
+  top: calc(35vh + 100px);
+  /* 相应地调整，保持与 logo 的相对位置 */
   width: 100%;
   display: flex;
   justify-content: center;
@@ -61,8 +83,10 @@ export default {
 @media (max-width: 600px) {
   .logo {
     font-size: 35px;
-    top: 37vh; /* 从 30vh 增加到 35vh */
+    top: 37vh;
+    /* 从 30vh 增加到 35vh */
   }
+
   .search-container {
     top: calc(37vh + 80px);
   }
@@ -83,36 +107,49 @@ export default {
 /* 新增的页脚样式 */
 footer {
   position: absolute;
-  bottom: 20px; /* 离底部20px */
-  text-align: center; /* 居中对齐 */
-  width: 100%; /* 宽度为100% */
-  font-size: 14px; /* 字体大小 */
-  color: var(--uv-styles-color-text-default); /* 使用与其他文本一致的颜色 */
+  bottom: 20px;
+  /* 离底部20px */
+  text-align: center;
+  /* 居中对齐 */
+  width: 100%;
+  /* 宽度为100% */
+  font-size: 14px;
+  /* 字体大小 */
+  color: var(--uv-styles-color-text-default);
+  /* 使用与其他文本一致的颜色 */
 }
 
 /* 链接样式 */
 footer a {
-  color: #156bc8; /* 白天模式下的鲜明蓝色 */
-  font-weight: bold; /* 加粗字体 */
-  transition: color 0.3s ease, text-shadow 0.3s ease; /* 添加文本阴影过渡 */
+  color: #156bc8;
+  /* 白天模式下的鲜明蓝色 */
+  font-weight: bold;
+  /* 加粗字体 */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  /* 添加文本阴影过渡 */
 }
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
   footer {
-    background-color: #1a1a1a; /* 深色背景 */
+    background-color: #1a1a1a;
+    /* 深色背景 */
   }
-  
+
   footer a {
-    color: #ffffff; /* 明亮的链接颜色 */
+    color: #ffffff;
+    /* 明亮的链接颜色 */
   }
 }
 
 /* 鼠标悬停效果 */
 footer a:hover {
-  color: #0056b3; /* 鼠标悬停时的深蓝色 */
-  text-decoration: underline; /* 添加下划线 */
-  text-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 鼠标悬停时添加阴影 */
+  color: #0056b3;
+  /* 鼠标悬停时的深蓝色 */
+  text-decoration: underline;
+  /* 添加下划线 */
+  text-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  /* 鼠标悬停时添加阴影 */
 }
 
 /* 鼠标悬停效果 - 深色模式 */

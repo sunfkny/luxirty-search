@@ -18,57 +18,68 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SearchPage',
-  props: ['query'],
-  mounted() {
-    this.loadGoogleCSE();
-    this.setupResultsRenderedCallback();  // 注册渲染结果回调函数
-    if (!this.query) {
-      this.goHome();
-    }
-  },
-  methods: {
-    loadGoogleCSE() {
-      const script = document.createElement('script');
-      script.src = `https://cse.google.com/cse.js?cx=${import.meta.env.VITE_GOOGLE_CSE_CX}`;
-      script.async = true;
-      document.head.appendChild(script);
-    },
-    setTitle() {
-      var inputContent = document.getElementsByName('search')[0].value;
-      document.title = inputContent + ' - Luxirty Search'
-    },
-    goHome() {
-      // 使用 window.location.href 跳转到根路径
-      window.location.href = '/';
-    },
-    setupResultsRenderedCallback() {
-      // 定义一个渲染回调函数，用于移除不需要的属性
-      const myWebResultsRenderedCallback = () => {
-        const links = document.querySelectorAll('a.gs-title');
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const props = defineProps<{
+  q: string;
+}>();
 
-        links.forEach((anchor) => {
-          // 移除 'data-cturl' 和 'data-ctorig' 属性
-          anchor.removeAttribute('data-cturl');
-          anchor.removeAttribute('data-ctorig');
-        });
+const gscInputValue = ref<string>('');
 
-        // 设置搜索标题，多页签时更好切换
-        this.setTitle();
-      };
+watch(gscInputValue, (value) => {
+  // 设置搜索标题，多页签时更好切换
+  document.title = value + ' - Luxirty Search';
+  // 设置搜索参数，刷新后保留正确的搜索内容
+  const url = new URL(window.location.href);
+  url.searchParams.set('q', value);
+  history.replaceState(history.state, '', url);
+});
 
-      // 将回调注册到 Google Custom Search 引擎对象
-      window.__gcse || (window.__gcse = {});
-      window.__gcse.searchCallbacks = {
-        web: {
-          rendered: myWebResultsRenderedCallback,
-        },
-      };
-    }
+function loadGoogleCSE() {
+  const script = document.createElement('script');
+  script.src = `https://cse.google.com/cse.js?cx=${import.meta.env.VITE_GOOGLE_CSE_CX}`;
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+function goHome() {
+  router.replace('/');
+}
+
+function setupResultsRenderedCallback() {
+  // 定义一个渲染回调函数，用于移除不需要的属性
+  const myWebResultsRenderedCallback = () => {
+    const links = document.querySelectorAll('a.gs-title');
+
+    links.forEach((anchor) => {
+      // 移除 'data-cturl' 和 'data-ctorig' 属性
+      anchor.removeAttribute('data-cturl');
+      anchor.removeAttribute('data-ctorig');
+    });
+
+    const input: HTMLInputElement | null = document.querySelector('input.gsc-input');
+    gscInputValue.value = input?.value || '';
+  };
+
+  // 将回调注册到 Google Custom Search 引擎对象
+  window.__gcse || (window.__gcse = {});
+  window.__gcse.searchCallbacks = {
+    web: {
+      rendered: myWebResultsRenderedCallback,
+    },
+  };
+}
+
+onMounted(() => {
+  if (!props.q) {
+    goHome()
   }
-};
+  loadGoogleCSE();
+  setupResultsRenderedCallback(); // 注册渲染结果回调函数
+})
+
 </script>
 <style scoped>
 .my-container {
@@ -145,27 +156,35 @@ footer {
 
 /* 链接样式 */
 footer a {
-  color: #156bc8; /* 白天模式下的鲜明蓝色 */
-  font-weight: bold; /* 加粗字体 */
-  transition: color 0.3s ease, text-shadow 0.3s ease; /* 添加文本阴影过渡 */
+  color: #156bc8;
+  /* 白天模式下的鲜明蓝色 */
+  font-weight: bold;
+  /* 加粗字体 */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  /* 添加文本阴影过渡 */
 }
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
   footer {
-    background-color: #1a1a1a; /* 深色背景 */
+    background-color: #1a1a1a;
+    /* 深色背景 */
   }
-  
+
   footer a {
-    color: #ffffff; /* 明亮的链接颜色 */
+    color: #ffffff;
+    /* 明亮的链接颜色 */
   }
 }
 
 /* 鼠标悬停效果 */
 footer a:hover {
-  color: #0056b3; /* 鼠标悬停时的深蓝色 */
-  text-decoration: underline; /* 添加下划线 */
-  text-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 鼠标悬停时添加阴影 */
+  color: #0056b3;
+  /* 鼠标悬停时的深蓝色 */
+  text-decoration: underline;
+  /* 添加下划线 */
+  text-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  /* 鼠标悬停时添加阴影 */
 }
 
 footer img {
