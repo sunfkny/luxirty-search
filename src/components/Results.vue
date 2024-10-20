@@ -9,8 +9,10 @@
     </div>
     <footer>
       <p>
-        &copy; Create by <a href="https://luxirty.com/posts/luxirty-search/" target="_blank">Luxirty</a> with &hearts; |
-        Open Source on <a href="https://github.com/KoriIku/luxiry-search" target="_blank"> GitHub </a>
+        &copy; Create by
+        <a href="https://luxirty.com/posts/luxirty-search/" target="_blank">Luxirty</a>
+        with &hearts; | Open Source on
+        <a href="https://github.com/KoriIku/luxiry-search" target="_blank"> GitHub </a>
       </p>
     </footer>
   </div>
@@ -19,20 +21,24 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-const router = useRouter();
-const props = defineProps<{
-  q: string;
-}>();
+import { useUrlSearchParams, useTitle } from '@vueuse/core';
 
+type ResultsParams = {
+  q: string;
+};
+const router = useRouter();
+const props = defineProps<ResultsParams>();
+const title = useTitle();
+const searchParams = useUrlSearchParams<ResultsParams>('history', {
+  write: true,
+});
 const gscInputValue = ref<string>('');
 
 watch(gscInputValue, (value) => {
   // 设置搜索标题，多页签时更好切换
-  document.title = value + ' - Luxirty Search';
+  title.value = value + ' - Luxirty Search';
   // 设置搜索参数，刷新后保留正确的搜索内容
-  const url = new URL(window.location.href);
-  url.searchParams.set('q', value);
-  history.replaceState(history.state, '', url);
+  searchParams.q = value;
 });
 
 function loadGoogleCSE() {
