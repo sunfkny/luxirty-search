@@ -35,13 +35,11 @@
 
   --section-gap: 160px;
 
-  --fr-font-basefont: system-ui, -apple-system, BlinkMacSystemFont, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji",
-    "EmojiSymbols", "EmojiOne Mozilla", "Twemoji Mozilla", "Segoe UI Symbol",
-    "Noto Color Emoji Compat", emoji, "Font Awesome 6 Pro", "Font Awesome 5 Pro",
-    FontAwesome, iconfont, icomoon, IcoFont, fontello, themify,
-    "Segoe Fluent Icons", "Material Design Icons", bootstrap-icons;
-  --fr-font-family: "Microsoft YaHei UI";
+  --fr-font-basefont: system-ui, -apple-system, BlinkMacSystemFont, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', 'EmojiOne Mozilla', 'Twemoji Mozilla', 'Segoe UI Symbol',
+    'Noto Color Emoji Compat', emoji, 'Font Awesome 6 Pro', 'Font Awesome 5 Pro', FontAwesome, iconfont, icomoon,
+    IcoFont, fontello, themify, 'Segoe Fluent Icons', 'Material Design Icons', bootstrap-icons;
+  --fr-font-family: 'Microsoft YaHei UI';
   --fr-font-shadow: 0 0 0.75px #7c7c7cdd;
   --fr-font-stroke: 0.015px currentcolor;
   --uv-styles-color-surface: #ffffff;
@@ -91,10 +89,22 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
-  transition: color 0.5s, background-color 0.5s;
+  transition:
+    color 0.5s,
+    background-color 0.5s;
   line-height: 1.6;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
     sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;

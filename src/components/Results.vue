@@ -10,9 +10,7 @@
     <footer>
       <p>
         &copy; Create by <a href="https://luxirty.com/posts/luxirty-search/" target="_blank">Luxirty</a> with &hearts; |
-        Open Source on <a href="https://github.com/KoriIku/luxiry-search" target="_blank">
-          GitHub
-        </a>
+        Open Source on <a href="https://github.com/KoriIku/luxiry-search" target="_blank"> GitHub </a>
       </p>
     </footer>
   </div>
@@ -74,12 +72,11 @@ function setupResultsRenderedCallback() {
 
 onMounted(() => {
   if (!props.q) {
-    goHome()
+    goHome();
   }
   loadGoogleCSE();
   setupResultsRenderedCallback(); // 注册渲染结果回调函数
-})
-
+});
 </script>
 <style scoped>
 .my-container {
@@ -160,7 +157,9 @@ footer a {
   /* 白天模式下的鲜明蓝色 */
   font-weight: bold;
   /* 加粗字体 */
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
   /* 添加文本阴影过渡 */
 }
 

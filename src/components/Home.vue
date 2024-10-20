@@ -3,9 +3,7 @@
     <div class="about">
       <a href="https://luxirty.com/posts/luxirty-search/" target="_blank">关于</a>
     </div>
-    <div class="logo">
-      Luxirty Search
-    </div>
+    <div class="logo">Luxirty Search</div>
     <div class="search-container" ref="searchContainerRef">
       <div class="gcse-searchbox-only" data-resultsUrl="search"></div>
     </div>
@@ -13,10 +11,9 @@
     <!-- 添加页脚 -->
     <footer>
       <p>
-        &copy; Create by <a href="https://luxirty.com/about/" target="_blank">Luxirty</a> with Love |
-        Open Source on <a href="https://github.com/KoriIku/luxiry-search" target="_blank">
-          GitHub
-        </a>
+        &copy; Create by
+        <a href="https://luxirty.com/about/" target="_blank">Luxirty</a> with Love | Open Source on
+        <a href="https://github.com/KoriIku/luxiry-search" target="_blank"> GitHub </a>
       </p>
     </footer>
   </div>
@@ -44,7 +41,10 @@ onMounted(() => {
   if (searchContainerRef.value === null) {
     console.warn("Failed to find the search container, can't observe it to focus the input.");
   } else {
-    observer.observe(searchContainerRef.value, { childList: true, subtree: true });
+    observer.observe(searchContainerRef.value, {
+      childList: true,
+      subtree: true,
+    });
   }
 });
 
@@ -125,7 +125,9 @@ footer a {
   /* 白天模式下的鲜明蓝色 */
   font-weight: bold;
   /* 加粗字体 */
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
   /* 添加文本阴影过渡 */
 }
 
