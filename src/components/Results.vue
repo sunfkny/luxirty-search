@@ -32,13 +32,19 @@ const title = useTitle();
 const searchParams = useUrlSearchParams<ResultsParams>('history', {
   write: true,
 });
-const gscInputValue = ref<string>('');
+const input = ref<string>('');
+const page = ref<number>(1);
+const cseElement = ref<ElementObject | null>(null);
 
-watch(gscInputValue, (value) => {
+watch(input, (value) => {
+  console.log('input', value);
   // 设置搜索标题，多页签时更好切换
   title.value = value + ' - Luxirty Search';
   // 设置搜索参数，刷新后保留正确的搜索内容
   searchParams.q = value;
+});
+watch(page, (value) => {
+  console.log('page', value);
 });
 
 function loadGoogleCSE() {
@@ -53,25 +59,32 @@ function goHome() {
 }
 
 function setupResultsRenderedCallback() {
-  // 定义一个渲染回调函数，用于移除不需要的属性
-  const myWebResultsRenderedCallback = () => {
-    const links = document.querySelectorAll('a.gs-title');
-
-    links.forEach((anchor) => {
-      // 移除 'data-cturl' 和 'data-ctorig' 属性
-      anchor.removeAttribute('data-cturl');
-      anchor.removeAttribute('data-ctorig');
-    });
-
-    const input: HTMLInputElement | null = document.querySelector('input.gsc-input');
-    gscInputValue.value = input?.value || '';
-  };
-
   // 将回调注册到 Google Custom Search 引擎对象
   window.__gcse || (window.__gcse = {});
+  window.__gcse.initializationCallback = () => {
+    cseElement.value = window.google?.search.cse.element.getElement('two-column')!;
+  };
   window.__gcse.searchCallbacks = {
     web: {
-      rendered: myWebResultsRenderedCallback,
+      starting: (gname, query) => {
+        console.log('__gcse.searchCallbacks.web.starting', { gname, query });
+        input.value = query;
+      },
+      ready: (gname, query, promos, results, div) => {
+        console.log('__gcse.searchCallbacks.web.ready', { gname, query, promos, results, div });
+      },
+      rendered: (gname, query, promoElts, resultElts) => {
+        console.log('__gcse.searchCallbacks.web.rendered', { gname, query, promoElts, resultElts });
+        const links = document.querySelectorAll('a.gs-title');
+        links.forEach((anchor) => {
+          anchor.removeAttribute('data-cturl');
+          anchor.removeAttribute('data-ctorig');
+        });
+        const pageElement: HTMLDivElement | null = document.querySelector('div.gsc-cursor-current-page');
+        if (pageElement) {
+          page.value = parseInt(pageElement.innerText);
+        }
+      },
     },
   };
 }

@@ -4,7 +4,7 @@
       <a href="https://luxirty.com/posts/luxirty-search/" target="_blank">关于</a>
     </div>
     <div class="logo">Luxirty Search</div>
-    <div class="search-container" ref="searchContainerRef">
+    <div class="search-container">
       <div class="gcse-searchbox-only" data-resultsUrl="search"></div>
     </div>
 
@@ -20,36 +20,37 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { useUrlSearchParams } from '@vueuse/core';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-const searchContainerRef = useTemplateRef('searchContainerRef');
-
-const observer = new MutationObserver(() => {
-  const input: HTMLInputElement | null = document.querySelector('input.gsc-input');
-  if (input != null) {
-    input.focus();
-    observer.disconnect();
-  }
-});
+type ResultsParams = {
+  q: string;
+};
+const searchParams = useUrlSearchParams<ResultsParams>('history');
+const router = useRouter();
 
 onMounted(() => {
+  if (searchParams.q) {
+    router.push({
+      path: '/search',
+      query: {
+        q: searchParams.q,
+      },
+    });
+  }
+  window.__gcse || (window.__gcse = {});
+  window.__gcse.initializationCallback = () => {
+    const input: HTMLInputElement | null = document.querySelector('input.gsc-input');
+    if (input != null) {
+      input.focus();
+    }
+  };
+
   const script = document.createElement('script');
   script.src = `https://cse.google.com/cse.js?cx=${import.meta.env.VITE_GOOGLE_CSE_CX}`;
   script.async = true;
   document.body.appendChild(script);
-
-  if (searchContainerRef.value === null) {
-    console.warn("Failed to find the search container, can't observe it to focus the input.");
-  } else {
-    observer.observe(searchContainerRef.value, {
-      childList: true,
-      subtree: true,
-    });
-  }
-});
-
-onUnmounted(() => {
-  observer.disconnect();
 });
 </script>
 
